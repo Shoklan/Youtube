@@ -445,6 +445,34 @@ def softmax(x): return exp(x) / exp(x).sum(dim=1, keepdim=True)
 
 
 # <a name="lession5">Lesson 5</a>
+- Lots of articles pointing out that Technology is a tool.
+- **Feedback Loops** is when your model is controlling the next round of data you get.
+- When building models, you're not just observing reality; you're interacting with it.
+- It is really important to build systems where it is easy to identify and address mistakes.
+- Data collection has played a role in Genocides.
+- **Ethics** is the dscipline of dealing with what is good and bad.
+- It is not the same as religion, law, social norms, etc.
+- It is not a fixed set of rules.
+- Literally nobody knows what they're doing and everyone in Academia cares about much larger than their domain of knowledge.
+- The largest agreed upon topic is Critique.
+- The first Set of Values is **Recourse** and **Accountability**.
+- "It is always been a challenge for bureaucracy to assign responsibility; it is used to evade responsibility."
+- Always keep in mind that database records have errors.
+- Improved Access Controls are lacking in many systems.
+- People respond an adapt to metrics - which can lead to socially negative behavior.
+- Any metric is just a proxy for what you care about.
+- Our online environments are designed to be addictive.
+- The fundamental online business model is centered on manipulating people's behavior & monopolizing their time.
+- **Blitzscaling** is prioritizing speed over efficiency.
+- There are three common philosophies:
+  1. **Utilitatian**: The good to be maximized.
+  2. **Deontological**: Adhering to the right.
+  3. **Virtue Ethics**: Lives by a Code of Honor.
+![Deontological Questions for Technology](images/deontological-questions-for-tech.png)
+![Consequentialist Questions](images/consequentialist-questions.png)
+![Five Ethical Lenses](images/five-ethical-lenses.png)
+- Me: Credentialism is garbo.
+
 
 # <a name="lession6">Lesson 6</a>
 
@@ -483,8 +511,10 @@ def softmax(x): return exp(x) / exp(x).sum(dim=1, keepdim=True)
 - [Model Zoo](https://modelzoo.co/)
 - [Splunk: Catching a Fraudster Use case](images/https://www.splunk.com/en_us/blog/security/deep-learning-with-splunk-and-tensorflow-for-security-catching-the-fraudster-in-neural-networks-with-behavioral-biometrics.html)
 - [Audio Classification With CNNs](images/https://medium.com/@etown/great-results-on-audio-classification-with-fastai-library-ccaf906c5f52)
-- [Paper: Malware Classification With Deep Convolutional Neural Network](papers/Malware-Classification-with-Deep-Convolutional-Neural-Network.pdf)
+- [Paper: **Malware Classification With Deep Convolutional Neural Network**](papers/Malware-Classification-with-Deep-Convolutional-Neural-Network.pdf)
 - [Original Drive Train Article](https://www.oreilly.com/radar/drivetrain-approach-data-products/)
-- [Paper: Actionable Auditing Investigating Impact of Publicly Naming Biased Performance Results of Commercial AI Prodcuts](papers/Actionable-Auditing-Investigating-Impact-of-Publicly-Naming-Biased-Performance-Results-of-Commercial-AI-Prodcuts.pdf)
+- [Paper: **Actionable Auditing Investigating Impact of Publicly Naming Biased Performance Results of Commercial AI Prodcuts**](papers/Actionable-Auditing-Investigating-Impact-of-Publicly-Naming-Biased-Performance-Results-of-Commercial-AI-Prodcuts.pdf)
 - [Fastpages for Blogging](https://github.com/fastai/fastpages)
+- [Paper: Whats Measured is What Matters Targets and Gaming in the English Public Healthcare System](papers/Whats-Measured-is-What-Matters-Targets-and-Gaming-in-the-English-Public-Healthcare-System.pdf)
+- [Markkula Center For Applied Ethics](https://www.scu.edu/ethics/)
 -
