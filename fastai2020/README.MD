@@ -207,6 +207,110 @@ learn_inf.predict('images/grizzly.jpg')
 
 
 # <a name="lession3">Lesson 3</a>
+- We're back and you should of played with everything by this time.
+- We skipped over the transforms part - which we're coming back to now.
+- The lines `item_tfms=Resize(128)` means that the images will be resized to 128x128.
+- You can see the images using `dls.valid.show_batch(max_n = <n>, nrows=<n>)`:
+![Show Images in Batch](images/show-batch-of-validation.png)
+- While you don't have to make the images squares, it is the most common.
+- You can change the transforms using `bears.new()`:
+![Create New Transforms](images/dataloader-create-new-transforms.png)
+```python
+bears = bears.new(item_tfms=Resize(128, ResizeMethod.Squish))
+dls = bears.dataloaders(path)
+dls.valid.show_batch(max_n=4, nrows=1)
+
+# ---
+
+bears = bears.new(item_tfms=Resize(128, ResizeMethod.Pad, pad_mode='zeros'))
+dls = bears.dataloaders(path)
+dls.valid.show_batch(max_n=4, nrows=1)
+```
+- The `ResizeMethod.Squish` tends to be the most efficient.
+- The best is to use `RandomResizeCrop` which takes a different part of the image.
+![Random Resize Crop Example](images/random-resize-crop.png)
+- This method is called **Data Augmentation** of which this is simply one of them.
+- The best way to do this is with `aug_transforms` which returns a list of different augmentations.
+- This is usually done on a Batch of images - hence **Batch Transforms** which is different than **Item Transforms** per above.
+- Fastai will automatically avoid doing transforms on the validation set.
+- **It is normally easier to clean your data after the model is created.**
+- You can filter manually which images to keep or discard with an `ImageClassifierCleaner`:
+![Image Classifier Cleaner](images/image-classifier-cleaner.png)
+```python
+cleaner = ImageClassifierCleaner(learn)
+cleaner
+
+# actually kill them:
+for idx in cleaner.delete(): cleaner.fns[idx].unlink()
+for idx,cat in cleaner.change(): shutil.move(str(cleaner.fns[idx]), path/cat)
+```
+- The prediction gives you the predicted category along with a tensor of the probability of each class.
+- They wont make sense unless you ask for the order of the categories - which you can get with `learn.dls.vocab`.
+- So, Jeremy et al have found a way to show off the Application in a Notebook.
+- This uses *IPython widgets* which contains lots of GUI type functions.
+![Widgets Upload and Output](images/widgets-upload-output.png)
+![Widget Labels, Callbacks, VBox](images/widget-label-callback-vbox.png)
+- While this prototyping apps are interesting, we'll want them in a real place people can run.
+- We're going to be using `Voila!`.
+- You will install it using:
+```
+!pip install voila
+!jupyter serverextension enable voila —sys-prefix
+```
+- This will only allow allow users to interact with the widgets in a Notebook.
+- You just need to change the url to point to voila in the path.
+- You can now user mybinder.org to run the notebook for you!
+- It was found that most people just need to deploy to a CPU than to a GPU since there is no harm in running the model one at a time.
+- You can deploy to a mobile phone but if you do then deploy to a server and have the mobile phone talk to the server.
+- **Homework: Create your own Application**.
+- Beware that the data you're training on is related to the actual input you're going to be using.
+- **Beware of Out of Domain Data**.
+- **Beware of Domain Shift**.
+- Remember that it is impossible to really know what the model is doing.
+![Method to Insert Models into Production](images/slow-insert-into-production.png)
+- The best advice would be to start blogging sooner.
+- They have made a technology called **Fastpages** which is as blog based on notebooks.
+  * Write posts for people one step behind you.
+- It is a good idea to start with something simple and scale it up.
+- You can set the base path using `Path.BASE_PATH = <path>`.
+- The library **Fastcore** is where much of the foundational stuff is located.
+- One easy way to deal with images is to convert them to numbers.
+- You can convert the image into a matrix using `array()` which is from numpy.
+- And, `tensors()` are PyTorch's version on Matrices.
+- The biggest - and most meaningful difference - is that you can put them on a GPU.
+![Visualize the Digit Part](images/pandas-background-gradient-image.png)
+- One mistake that is usually done is that people fail to create a baseline model.
+- A **Baseline** model is a simple model which you are confident should perform reasonably well.
+- You can use `show_image()` on a tensor to see it from Fastai.
+- You can stack dimensions on a tensor using `torch.stack()`.
+- You can get the rank of a tensor by taking the length of its shape.
+- The **Mean Absolute Difference (L1 Norm)** is the mean of the absolute value of the difference.
+- The **Root Mean Squared Error (RSME/L2 Norm)** is the square root of the mean of square of differences.
+- We don't have to write this ourselves though since it's already give to us:
+```python
+F.l1_loss(a_3.float(), mean7), F.mse_loss(a_3,mean7).sqrt()
+```
+- I know what **Broadcasting** is and how it works.
+- One of the advantages of this is to avoid looping.
+- So, now we're going to learn about **Stochastic Gradient Descent**; this is how the model weights get updated.
+- The process is:
+  1. Initialize the weights.
+  2. For each image, use these weights to predict whether it appears to be a 3 or a 7.
+  3. Based on these predictions, calculate how good the model is (its loss).
+  4. Calculate the gradient, which measures for each weight, how changing that weight would change the loss
+  5. Step (that is, change) all the weights based on that calculation.
+  6. Go back to the step 2, and repeat the process.
+  7. Iterate until you decide to stop the training process (for instance, because the model is good enough or you don't want to wait any longer).
+![Train the Model Weights](images/train-the-model-weights.png)
+- Fastai has a nice little function called `plot_function` which does exactly that.
+- So, the idea is to try to get to the lowest point by modulating the steps taken:
+![Move Towards the Goal](images/sgd-showing-the-steps.png)
+- And so, we now need Calculus to find the derivatives for functions.
+- To do this, you will need to attach `.requires_grad()` to a tensor.
+- And, any functions now applied to the tensor will be remembered for gradient calculation.
+- To calculate them, just call `tensor.backward()`.
+- It is certain that at some points the gradient will be zero and if you multiply by that then it will never update.
+
 
 # <a name="lession4">Lesson 4</a>
 
@@ -225,6 +329,14 @@ learn_inf.predict('images/grizzly.jpg')
 - what is `gv()`?
 - Domain specific pretrained models?
 - Who is Frank Harrell?
+- ImageClassifierCleaner?
+- Vue.js in widgets framework?
+- mybinder.org ?
+- ONNX Runtime?
+- Lenet 5?
+
+# Come back:
+- [torch.stack](https://youtu.be/5L3Ao5KuCC4?t=4917)
 -
 
 
@@ -236,3 +348,10 @@ learn_inf.predict('images/grizzly.jpg')
 - [Paper: **Multilayer Feedforward Networks are Universal Approximators**](papers/Multilayer-Feedforward-Networks-are-Universal-Approximators.pdf)
 - [Paper: **Visualizing and Understanding Convolutional Networks.pdf**](papers/Visualizing-and-Understanding-Convolutional-Networks.pdf)
 - [Model Zoo](https://modelzoo.co/)
+- [Splunk: Catching a Fraudster Use case](images/https://www.splunk.com/en_us/blog/security/deep-learning-with-splunk-and-tensorflow-for-security-catching-the-fraudster-in-neural-networks-with-behavioral-biometrics.html)
+- [Audio Classification With CNNs](images/https://medium.com/@etown/great-results-on-audio-classification-with-fastai-library-ccaf906c5f52)
+- [Paper: Malware Classification With Deep Convolutional Neural Network](papers/Malware-Classification-with-Deep-Convolutional-Neural-Network.pdf)
+- [Original Drive Train Article](https://www.oreilly.com/radar/drivetrain-approach-data-products/)
+- [Paper: Actionable Auditing Investigating Impact of Publicly Naming Biased Performance Results of Commercial AI Prodcuts](papers/Actionable-Auditing-Investigating-Impact-of-Publicly-Naming-Biased-Performance-Results-of-Commercial-AI-Prodcuts.pdf)
+- [Fastpages for Blogging](https://github.com/fastai/fastpages)
+-
