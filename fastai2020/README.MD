@@ -5,7 +5,7 @@
 
 1. [Lesson 1: Everyone Can Do World Class](#lession1)
 2. [Lesson 2: Getting Our Feet Wet With Ideas and Training](#lession2)
-3. [Lesson 3](#lession3)
+3. [Lesson 3: Loading, Modifying and A Fork in Movement](#lession3)
 4. [Lesson 4](#lession4)
 5. [Lesson 5](#lession5)
 6. [Lesson 6](#lession6)
@@ -292,7 +292,7 @@ F.l1_loss(a_3.float(), mean7), F.mse_loss(a_3,mean7).sqrt()
 ```
 - I know what **Broadcasting** is and how it works.
 - One of the advantages of this is to avoid looping.
-- So, now we're going to learn about **Stochastic Gradient Descent**; this is how the model weights get updated.
+- So, now we're going to learn about **Gradient Descent**; this is how the model weights get updated.
 - The process is:
   1. Initialize the weights.
   2. For each image, use these weights to predict whether it appears to be a 3 or a 7.
@@ -313,6 +313,136 @@ F.l1_loss(a_3.float(), mean7), F.mse_loss(a_3,mean7).sqrt()
 
 
 # <a name="lession4">Lesson 4</a>
+- Now we're going further into how to create the model on MNIST.
+- The way we reshape torch tensors is with the `.view()` function.
+```python
+train_x = torch\
+  .cat([stacked_threes, stacked_sevens])\
+  .view(-1, 28*28) # change the dims; fill the rows with however
+                   # many there are in the data.
+```
+- You will need a matrix and this ...
+```python
+tensor([1]*len(threes) + [0]*len(sevens))
+```
+- ... will produce a vector.
+- The `.squeeze(1)` will add a unit dimension because that is what pytorch expects to see.
+- A **PyTorch Dataset** is something e can index into; this must return a tuple.
+- We need there to be weights for each pixel: `init_params((28 * 28,1 ))`.
+- Remember that we want to avoid 0's and we add a bias variable.
+- The weights and bias together make up the **Parameters**.
+- We can now calculate the predictions using a matrix multiply:
+![Matrix Multiplication](images/matrix-multiply-for-manual-parameter-updates.png)
+- In python, `@` is the matrix multiplication operator.
+- If you want a number instead of a single value tensor, then you need to add `.item()`.
+- You cannot use **Accuracy** as a loss function because it causes 0s in gradients due to being a "bumpy function" with weight updates.
+- So, what we need is a function which will take our  large numbers and convert them all into numbers between 0 and 1.
+- This function is the **Sigmoid Function**:
+![ Sigmoid Plot](images/sigmoid-plot.png)
+- While we could do a prediction, step combo with each individual image, what we'll actually do is look at batches of lots of images.
+- The term for this is called a **Mini-batch**.
+- The size of the *mini-batch* is called the **Batch Size**.
+- We get these mini-batches by asking for them from a **Data Loader** from PyTorch.
+```python
+dl = DataLoader(ds, batch_size=6, shuffle=True)
+```
+- Putting it all together so far:
+```python
+for x,y in dl:
+    pred = model(x)                    # get predictions.
+    loss = loss_func(pred, y)          # calc loss
+    loss.backward()                    # compute grads
+    parameters -= parameters.grad * lr # modify weights.
+```
+- If you run it twice you will notice that the gradients changed.
+- This is because `.backward()` doesn't only calculate them but calculates and adds them to the existing gradients.
+- To remove them after, call `tensor.grad.zero_()`.
+- Remember that if you write to `.data` for a tensor that you're telling PyTorch explicitly *do not update the gradients*.
+- And, now we can run the set of *epochs* and we'll get better predictions:
+```python
+for i in range(20):
+    train_epoch(linear1, lr, params)
+    print(validate_epoch(linear1), end=' ')
+```
+- We're going to replace our custom linear function with the inbuilt on called `nn.Linear(28*28,1)`.
+- You can see the parameters in it by calling `model.parameters()`.
+- And, now we're going to create an optimizer.
+- We don't have to create it though since PyTorch and Fastai both come with SGD.
+- Fastai has the loop function built in called `Learner.fit()`.
+![Call Fit Function](images/learner-call-fit.png)
+- Before that, we'll want to create a Learner:
+```python
+learn = Learner(dls, nn.Linear(28*28,1), opt_func=SGD,
+                loss_func=mnist_loss, metrics=batch_accuracy)
+```
+- This is where the API is to really build experiments.
+- But, now we want non-linearity so we can get a Neural Network.
+- And, here is how it's done:
+```python
+
+def simple_net(xb):
+    res = xb@w1 + b1
+    res = res.max(tensor(0.0))  # This is the non-linear "magic"
+    res = res@w2 + b2
+    return res
+```
+- All this does is return the value itself or 0: whichever is bigger.
+- This is called a **Rectified Linear Unit (ReLu)** which is a fancy term for a simple idea.
+- The reason this non-linear function exists is that if it didn't then we could re-write both linear functions into a single one.
+- This, of course, is also already in PyTorch as well: `F.relu()`.
+- All this really is just **Function Composition** which is really just functions applied to functions applied to functions.
+- Which PyTorch gives to us in `nn.Sequential()`:
+```python
+simple_net = nn.Sequential(
+    nn.Linear(28*28,30),
+    nn.ReLU(),
+    nn.Linear(30,1)
+)
+```
+- So, we can now train with this instead.
+- We can look inside of our models using `learn.recorder.values`:
+![Recorder Learning Values](images/learner-record-internal-values.png)
+- You can get the actual model itself using `learn.model`.
+- You can actually plot the weights internally:
+![Visualize Model Weights](images/see-model-layer-weights.png)
+- Lets rewind and look at how to make a data set useful.
+- Quick clarification that the function `L()` returns what is essentially an enhanced python list.
+- Now we're going to do a quick usage of **Regular Expressions** which you should know how to do.
+```python
+re.findall(
+  r'(.+)_\d+.jpg$', #grab value in the parenthesis.
+  fname.name
+)
+```
+- Now that this allows us to get the category, we can build a data block:
+![Use Regex to Extract the Labels](images/use-regex-pull-labels.png)
+- Fastai has what it calls **Presizing** which is a kind of Data Augmentation which is designed to minimize data destruction while mainlining good performance.
+![Presizing Example](imaages/presizing-example-of-bear.png)
+- Because the first step is creating a square, the warping second one can happen on the GPU - which is much faster.
+- Fastai keeps track of the shift in a lossless manor which improves the quality:
+![Image Interpolation Comparison](images/fastai-image-interpolation-comparison.png)
+- You can force to see all augmentations on the same image using `unique=True` in the `show_batch()` call.
+- You can get a summary of the processes ran using `dls.summary()`.
+- People say to do a bunch of data cleaning first but that's advised against; model as soon as you can.
+- You will see in `cnn_learner()` that a loss function is not passed.
+- This is because Fastai will try sane defaults as much as it can.
+- You can check what it picked via `learn.loss_func`.
+- In this case it selected **Cross Entrpopy Loss** which is the next topic.
+- This like the mnist_loss we wrote before but works with more than two categories.
+- A desirable attribute to the predictions is that all the values add up to one and one value dominates.
+- This is where **Softmax** will be what we need.
+- This function is similar to the Sigmoid function that we used but includes the ability to handle more than one category.
+```python
+def softmax(x): return exp(x) / exp(x).sum(dim=1, keepdim=True)
+```
+- What happens is that if one of the probabilities is slightly bigger, then it will be much bigger after softmax.
+- "For each of these, return the rows and columns":
+![Useful Tensor Indexer](images/fancy-and-handy-indexer.png)
+- This already exists in PyTorch called `F.nll_loss`.
+- While the function doesn't care about the difference between .99 and .999, we do since that is 10 magnitudes better performance.
+- So if you take softmax and feed that into negative loss likelyhood then you get **Cross Entropy**.
+![PyTorch Negative Log Likelihood Caveat](images/pytorch-expects-log_softmax.png)
+
 
 # <a name="lession5">Lesson 5</a>
 
@@ -337,6 +467,9 @@ F.l1_loss(a_3.float(), mean7), F.mse_loss(a_3,mean7).sqrt()
 
 # Come back:
 - [torch.stack](https://youtu.be/5L3Ao5KuCC4?t=4917)
+- [Review .view() since I cannot visualize it](https://youtu.be/p50s63nPq9I?t=306)
+- [Review torch.where()](https://youtu.be/p50s63nPq9I?t=1213)
+- [Updates notes with Negative Log likelihood](https://youtu.be/p50s63nPq9I?t=6574)
 -
 
 
