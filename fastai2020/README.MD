@@ -475,6 +475,143 @@ def softmax(x): return exp(x) / exp(x).sum(dim=1, keepdim=True)
 
 
 # <a name="lession6">Lesson 6</a>
+- There is no little point in having a model if you don't know what it is doing.
+- Most often, a **Confusion Matrix** would be used:
+![COnfusion Matrix](images/kind-of-limited-useful-confustion-matrix.png)
+- With so many, it would be better to check the most confused instead:
+```python
+interp.most_confused(min_val=5)
+```
+- One way to improve to the model is to improve the **Learning Rate**.
+- This will allow you to train faster.
+```python
+learn.fine_tune(1, base_lr=0.1)
+```
+![Learning Rate Set Base](images/set-base-learning-rate-in-fine-tune.png)
+- **Leslie Smith** Came up with the **Learning Rate Finder** which plots the loss against the learing rate.
+![Learning Rate Plotting](images/learning-rate-finder-plot.png)
+```python
+learn = cnn_learner(dls, resnet34, metrics=error_rate)
+lr_min,lr_steep = learn.lr_find()
+```
+- For transfer learning:
+  1. Throw away the last layer since it's from a different data.
+  2. Attach a new layer which is randomly initialized.
+  3. Train that new layer.
+- The call `self.freeze()` makes it so that only the last layers weights will get "stepped".
+![Fine_tune Internals](images/internal-code-of-fine-tune-func.png)
+- **Discriminative Learning Rates** is where the learning rate is variable across the layers, where the smallest is closet to the base and the largest is closer to the last layer.
+![Discriminnative Learning Rates](images/discriminative-learning-rates.png)
+```python
+learn = cnn_learner(dls, resnet34, metrics=error_rate)
+learn.fit_one_cycle(3, 3e-3)
+learn.unfreeze()
+learn.fit_one_cycle(12, lr_max=slice(1e-6,1e-4))
+```
+- **Fit One Cycle** has an adaptive method where it starts with a lower learning rate then specified, after about a third of batches it reaches the highest specified learning rate and then for the rest slowly decreases.
+- You can ask for the learner to use **Floating Point 16** using `.to_fp16()` on the learner.
+- This will usually cause a speed up in training on compatible GPUs.
+- Now we're going to look at Multi-Label Detection.
+- Fastai has a Factory function for creating test and validation datasets:
+```python
+# will run f1,f2 separately on the same input.
+dss = Datasets(a, [[f1],[f2]])
+```
+![Example Dataset Building](images/example-dataset-building.png)
+- By default, the DataBlock will just randomly split the rows.
+- This isn't much use unless we pass functions to them:
+```python
+
+dblock = DataBlock(get_x = lambda r: r['fname'], get_y = lambda r: r['labels'])
+dsets = dblock.datasets(df)
+dsets.train[0]
+```
+- Beware that Python really doesn't like saving anything with lambdas in it.
+- Now that we understand the API, we can now tell it what they are and how to handle them:
+```python
+dblock = DataBlock(blocks=(ImageBlock, MultiCategoryBlock),
+                   get_x = get_x, get_y = get_y)
+```
+The array of zeros and ones which comes out of the *MultiCategoryBlock* is a **One-Hot Encoding** of the the categories.
+- This means that you get 0s for when it is not there and 1 when there is it.
+- You can also add a splitter argument to the DataBlock API in case there is a column which tells you which is the test/validatoin.
+```python
+def splitter(df):
+    train = df.index[~df['is_valid']].tolist()
+    valid = df.index[df['is_valid']].tolist()
+    return train,valid
+
+dblock = DataBlock(blocks=(ImageBlock, MultiCategoryBlock),
+                   splitter=splitter,
+                   get_x=get_x,
+                   get_y=get_y)
+```
+- `F.binary_cross_entropy` is the same as `nn.BCELoss`.
+- Those above don't include the sigmoid so to do that you will want to use `F.binary_cross_entropy_with_logits` and `nn.NLLLoss`
+- Python has a function called `partial()` which can modify the keyword argument defaults but builds off the old function.
+- This allows you to modify them in place such as the threshold in accuray:
+![In Place Partial Parameter Replace](images/partial-in-place-replace-trianing.png)
+- Now we're going to go beyond just the normal image classification.
+> To be able to move beyond fixed applications, to crafting your own novel solutions to novel problems, it helps to really understand the data block API (and maybe also the mid-tier API, which we'll see later in the book). As an example, let's consider the problem of image regression. This refers to learning from a dataset where the independent variable is an image, and the dependent variable is one or more floats. Often we see people treat image regression as a whole separate application—but as you'll see here, we can treat it as just another CNN on top of the data block API.
+
+- The parameter `y_range` tells fastai what to expect for the values of Y.
+- This works by generating a sigmoid underneath:
+![Defined Sigmoid range](images/sigmoid-range-function.png)
+- You can have more or less than 3 channels for images.
+
+- Now we're moving on to **Collaborative Filtering**.
+- The foundational idea here is that there are **Latent Factors** about movies which gets people to pick them.
+- **Cross Validation** is not common with Deep Learning - unless you're in a competition like on Kaggle.
+- The **Dot Produt** is taking a sum of the element-wise multiplication of matrices or vectors.
+![Random Latent Factors](images/latent-factors-with-random-numbers.png)
+- Finding the set of random variables that best fit is what collaborative filtering is.
+- You can create a DataLoaders object from a dataframe:
+```python
+dls = CollabDataLoaders.from_df(<data>, item_name='<y-variables', bs=<bs>)
+```
+- We no longer have only a vocab since we have both titles and users - which you can see with `dls.classes`.
+- You will find the user and the movie indexes and do a dot product on them.
+- This is a problem since *find from index* is not a linear model.
+- However, there is an equivalent form which is a representation as a matrix product using *One-Hot Encoded Vector*.
+- This will include only the values with ones in them - which are the one-hot encoded values - and then you multiply:
+![Computational One-Hot Encoding](images/computational-one-hot-endcoding.png)
+- **I know about Python Inheritance**.
+- The actual computation is placed in a method called `forward()`.
+```python
+
+class DotProduct(Module):
+    def __init__(self, n_users, n_movies, n_factors, y_range=(0,5.5)):
+        self.user_factors = Embedding(n_users, n_factors)
+        self.movie_factors = Embedding(n_movies, n_factors)
+        self.y_range = y_range
+
+    def forward(self, x):
+        users = self.user_factors(x[:,0])
+        movies = self.movie_factors(x[:,1])
+        return sigmoid_range((users * movies).sum(dim=1), *self.y_range)
+```
+- Another thing which might show up is that there might just be a general bias on a movie or the user.
+- So, we'll want to add a bias Embedding:
+```python
+
+class DotProductBias(Module):
+    def __init__(self, n_users, n_movies, n_factors, y_range=(0,5.5)):
+        self.user_factors = Embedding(n_users, n_factors)
+        self.user_bias = Embedding(n_users, 1)
+        self.movie_factors = Embedding(n_movies, n_factors)
+        self.movie_bias = Embedding(n_movies, 1)
+        self.y_range = y_range
+
+    def forward(self, x):
+        users = self.user_factors(x[:,0])
+        movies = self.movie_factors(x[:,1])
+        res = (users * movies).sum(dim=1, keepdim=True)
+        res += self.user_bias(x[:,0]) + self.movie_bias(x[:,1])
+        return sigmoid_range(res, *self.y_range)
+```
+- While it isn't obvious, we'll want to use some form of **Regularization** to improve the results.
+- What these do is penalize a model for overfitting.
+
 
 # <a name="lession7">Lesson 7</a>
 
@@ -493,12 +630,15 @@ def softmax(x): return exp(x) / exp(x).sum(dim=1, keepdim=True)
 - ONNX Runtime?
 - Lenet 5?
 
+
+
 # Come back:
 - [torch.stack](https://youtu.be/5L3Ao5KuCC4?t=4917)
 - [Review .view() since I cannot visualize it](https://youtu.be/p50s63nPq9I?t=306)
 - [Review torch.where()](https://youtu.be/p50s63nPq9I?t=1213)
 - [Updates notes with Negative Log likelihood](https://youtu.be/p50s63nPq9I?t=6574)
--
+- [Multi-Label Datasets](https://youtu.be/cX30jxMNBUw?t=1905)
+- [Manually Build CSV from Training](https://youtu.be/cX30jxMNBUw?t=2717)
 
 
 
