@@ -6,11 +6,11 @@
 1. [Lesson 1: Everyone Can Do World Class](#lession1)
 2. [Lesson 2: Getting Our Feet Wet With Ideas and Training](#lession2)
 3. [Lesson 3: Loading, Modifying and A Fork in Movement](#lession3)
-4. [Lesson 4](#lession4)
-5. [Lesson 5](#lession5)
-6. [Lesson 6](#lession6)
-7. [Lesson 7](#lession7)
-8. [Lesson 8](#lession8)
+4. [Lesson 4: Popping Open the Top For Fundamentals](#lession4)
+5. [Lesson 5: Muh Ethics](#lession5)
+6. [Lesson 6: Collaborative Filters and Embeddings](#lession6)
+7. [Lesson 7:](#lession7)
+8. [Lesson 8:](#lession8)
 
 
 # <a name="lession1">Lesson 1</a>
@@ -614,8 +614,346 @@ class DotProductBias(Module):
 
 
 # <a name="lession7">Lesson 7</a>
+- Now we're going to look at **Weight Decay**.
+- This can be thought us as a kind of L2 Regularization.
+- What we do is add to the loss function the sum of all the weights squared.
+- It looks like this in practice: `parameters.grad += wd * 2 * parameters`
+- Unlike normal statistics where usually you prune parameters from the model, in this we simply reduce them.
+- Recall that PyTorch only optimizes parameters so it needs to show up as one.
+- But PyTorch does not assume that everything is a parameter in the Module so you need to tell it.
+- To tell it that, you need to wrap it in `nn.Parameter()`.
+- So, now you know that Embeddings are nothing special at all.
+- But, how do you interpret what the embeddings actaully mean?:
+![Trying to Interpret Embeddings](images/starting-to-interpret-embeddings.png)
+- We don't have to do all that manually and can instead simply call `collab_learner()`.
+```python
+learn = collab_learner(dls, n_factors=50, y_range=(0, 5.5))
+learn.fit_one_cycle(5, 5e-3, wd=0.1)
+```
+- One representation now is that since we have a "distance" between anything means we can compare movies:
+```python
+movie_factors = learn.model.i_weight.weight
+idx = dls.classes['title'].o2i['Silence of the Lambs, The (1991)']
+distances = nn.CosineSimilarity(dim=1)(movie_factors, movie_factors[idx][None])
+idx = distances.argsort(descending=True)[1]
+dls.classes['title'][idx]
+```
+- If you're not use about the embedding sizes then you can get a recommendation using `get_emb_sz(<dl>)`.
+- If you pass parameter `use_nn=True` then it will use the internal Neural Net concat version.
+- Now lets start into **Tabluar Data**.
+- What you can find is that these can learn **Latent Factors** which don't even appear in the data:
+![Latent Germany Geometry](images/latent-germany-factors.png)
+- This idea is sort of new and sort of controversial - according to Jeremy.
+- Instead, you'd usually use an ensemble of Decision trees.
+- An advantage of Ensemble of Decision Trees is that they're easier to interpret.
+- Another advantage of Random Forests is that you don't actually need to know what the labels mean.
+- If you see a column with values which should have an order implied then you should convert those from existing to ordered.
+```python
+sizes = 'Large','Large / Medium','Medium','Small','Mini','Compact'
+df['ProductSize'] = df['ProductSize'].astype('category')
+df['ProductSize'].cat.set_categories(sizes, ordered=True, inplace=True)
+```
+- So, a **Decision Tree** asks a series of binary (that is, yes or no) questions about the data.
+![Simple Decision Tree](images/simple-decision-tree.png)
+- Here are the steps:
+1. Loop through each column of the dataset in turn.
+2. For each column, loop through each possible level of that column in turn.
+3. Try splitting the data into two groups, based on whether they are greater than or less than that value (or if it is a categorical variable, based on whether they are equal to or not equal to that level of that categorical variable).
+4. Find the average sale price for each of those two groups, and see how close that is to the actual sale price of each of the items of equipment in that group. That is, treat this as a very simple "model" where our predictions are simply the average sale price of the item's group.
+5. After looping through all of the columns and all the possible levels for each, pick the split point that gave the best predictions using that simple model.
+6. We now have two different groups for our data, based on this selected split. Treat each of these as separate datasets, and find the best split for each by going back to step 1 for each group.
+6. Continue this process recursively, until you have reached some stopping criterion for each group—for instance, stop splitting a group further when it has only 20 items in it.
+- If you're going to take advantage of dates then you'll want to use this function to separate them: `add_datepart()`.
+> A second piece of preparatory processing is to be sure we can handle strings and missing data. Out of the box, sklearn cannot do either. Instead we will use fastai's class TabularPandas, which wraps a Pandas DataFrame and provides a few conveniences. To populate a TabularPandas, we will use two  TabularProcs, Categorify and FillMissing. A TabularProc is like a regular Transform, except that:
+>
+> It returns the exact same object that's passed to it, after modifying the object in place.
+> It runs the transform once, when data is first passed in, rather than lazily as the data is accessed.
+
+- You'll want to take care of this using:
+```python
+procs = [Categorify, FillMissing]
+```
+- Reminder that you'll want to ensure that you don't randomize when time is important.
+```python
+
+cond = (df.saleYear<2011) | (df.saleMonth<10)
+train_idx = np.where( cond)[0]
+valid_idx = np.where(~cond)[0]
+
+splits = (list(train_idx),list(valid_idx))
+```
+- Fastai has a helper function `cont_cat_split()` which will split the dataframe into categorical and continues subsets for you.
+- This is the final line:
+```python
+to = TabularPandas(df, procs, cat, cont, y_names=dep_var, splits=splits)
+```
+- Now we'll build the **Decision Tree Regressor**
+```python
+m = DecisionTreeRegressor(max_leaf_nodes=4)
+m.fit(xs, y);
+```
+- You can ask to have the tree drawn using `draw_tree`:
+```python
+draw_tree(m, xs, size=7, leaves_parallel=True, precision=2)
+```
+![Decision Tree Graphic](images/our-decision-tree-model.png)
+- While it looks like a perfect model, when you check the validation set it is overfitting quite a bit.
+- You can check the number of leaf nodes using `m.get_n_leaves()`.
+> Bagging predictors is a method for generating multiple versions of a predictor and using these to get an aggregated predictor. The aggregation averages over the versions... The multiple versions are formed by making bootstrap replicates of the learning set and using these as new learning sets. Tests… show that bagging can give substantial gains in accuracy. The vital element is the instability of the prediction method. If perturbing the learning set can cause significant changes in the predictor constructed, then bagging can improve accuracy.
+
+```python
+def rf(xs, y, n_estimators=40, max_samples=200_000,
+       max_features=0.5, min_samples_leaf=5, **kwargs):
+    return RandomForestRegressor(n_jobs=-1, n_estimators=n_estimators,
+        max_samples=max_samples, max_features=max_features,
+        min_samples_leaf=min_samples_leaf, oob_score=True).fit(xs, y)
+```
+- You can actually get the important estimators from this using:
+```python
+preds = np.stack([t.predict(valid_xs) for t in m.estimators_])
+```
+![Plot Subtree Estimates](images/plotting-tree-estimators.png)
+- Reasons now that we're having issues correctly predicting:
+  1. Still overfitting.
+  2. Next few weeks are too different.
+- We can find this out using **Out-Of-Bag** error.
+- You can get that using:
+```python
+r_mse(m.oob_prediction_, y)
+```
+> Recall that in a random forest, each tree is trained on a different subset of the training data. The OOB error is a way of measuring prediction error on the training set by only including in the calculation of a row's error trees where that row was not included in training. This allows us to see whether the model is overfitting, without needing a separate validation set.
+
+>
+It's not normally enough to just to know that a model can make accurate predictions—we also want to know how it's making predictions. feature importance gives us insight into this. We can get these directly from sklearn's random forest by looking in the feature_importances_ attribute.
+
+```python
+
+def rf_feat_importance(m, df):
+    return pd.DataFrame({'cols':df.columns, 'imp':m.feature_importances_}
+                       ).sort_values('imp', ascending=False)
+
+fi = rf_feat_importance(m, xs)
+fi[:10]
+
+def plot_fi(fi):
+    return fi.plot('cols', 'imp', 'barh', figsize=(12,7), legend=False)
+
+plot_fi(fi[:30]);
+```
+- If columns are not important then why not remove them?
+- Also, you'll want to remove redundant features - which you can find using `cluster_columns`:
+```python
+cluster_columns(xs_imp)
+```
+![Find Redundant Features](images/remove-redundant-features.png)
+- A **Partial Dependency Plot** is a plot that shows what happens when you variably change a value:
+> To answer this question, we can't just take the average sale price for each YearMade. The problem with that approach is that many other things vary from year to year as well, such as which products are sold, how many products have air-conditioning, inflation, and so forth. So, merely averaging over all the auctions that have the same YearMade would also capture the effect of how every other field also changed along with YearMade and how that overall change affected price.
+
+![Partial Dependency Plot Year](images/show-partial-dependency-plot-year.png)
+> We can do exactly the same thing, but for just a single row of data. For instance, let's say we are looking at some particular item at auction. Our model might predict that this item will be very expensive, and we want to know why. So, we take that one row of data and put it through the first decision tree, looking to see what split is used at each point throughout the tree. For each split, we see what the increase or decrease in the addition is, compared to the parent node of the tree. We do this for every tree, and add up the total change in importance by split variable.
+
+```python
+from treeinterpreter import treeinterpreter
+from waterfall_chart import plot as waterfall
+
+prediction,bias,contributions = treeinterpreter.predict(m, row.values)
+waterfall(valid_xs_final.columns, contributions[0], threshold=0.08,
+          rotation_value=45,formatting='{:,.3f}');
+```
+![Waterfall Plot](images/waterfall-plot-example.png)
+- **Random Forests cannot see outside of provided examples.**
+- If you concatenate and use a random forest to try and predict the validation set then it should fail if they're not distinct or related.
+- Now do it with a Neural Net:
+```python
+from fastai.tabular.all import *
+
+learn = tabular_learner(dls, y_range=(8,12), layers=[500,250],
+                        n_out=1, loss_func=F.mse_loss)
+
+learn.fit_one_cycle(5, 1e-2)
+
+preds,targs = learn.get_preds()
+r_mse(preds,targs)
+```
+- Combining Entity Embeddings with the Other Classifiers works very well - and you should try it.
+
 
 # <a name="lession8">Lesson 8</a>
+- Now we're going to look at doing Natural Language Processing.
+![NLP Tasks](images/nlp-tasks-and-sources.png)
+- A Language Model tells us a lot about what a sentence looks like.
+- The approach we took for a single categorical variable was to:
+> 1. Make a list of all possible levels of that categorical variable (we'll call this list the vocab).
+> 2. Replace each level with its index in the vocab.
+> 3. Create an embedding matrix for this containing a row for each level (i.e., for each item of the vocab).
+> 4. Use this embedding matrix as the first layer of a neural network. (A dedicated embedding matrix can take as inputs the raw vocab indexes created in step 2; this is equivalent to but faster and more efficient than a matrix that takes as input one-hot-encoded vectors representing the indexes.)
+
+- You will use the the same sentence split and offset by one for the dependent variable in predictions.
+- There are the complete steps:
+> **Tokenization**: Convert the text into a list of words (or characters, or substrings, depending on the granularity of your model)
+> **Numericalization**: Make a list of all of the unique words that appear (the vocab), and convert each word into a number, by looking up its index in the vocab
+> **Language model data loader creation**: fastai provides an LMDataLoader class which automatically handles creating a dependent variable that is offset from the independent variable by one token. It also handles some important details, such as how to shuffle the training data in such a way that the dependent and independent variables maintain their structure as required
+> **Language model creation**: We need a special kind of model that does something we haven't seen before: handles input lists which could be arbitrarily big or small. There are a number of ways to do this; in this chapter we will be using a recurrent neural network (RNN).
+
+- Fastai uses primarily *spaCy* for English text.
+- This is internal though and you can use `WordTokenizer()` instead.
+- Fastai wrappers around the tokenizer and adds some extra stuff.
+- If you see `xxmaj` in a token list then that means the next word used to be capitalized.
+- If you see `xxbos` then this is the start of a document.
+- There is some idea of repetition as well so you may see `'xxrep', '3', 'w'`.
+- If you see `xxunk` then it means the token is unknown.
+- You can't really do word tokenization for Chinese.
+- We do this instead:
+  1. Analyze a corpus of documents to find the most commonly occurring groups of letters. These become the vocab.
+  2. Tokenize the corpus using this vocab of subword units.
+- It will split words up if they're not common enough:
+![Subword Example](images/subwrod-break-apart.png)
+```python
+toks = tkn(txt)
+toks200 = txts[:200].map(tkn)
+
+num = Numericalize()
+num.setup(toks200)
+coll_repr(num.vocab,20)
+```
+- We create a "batch" size of size by breaking the input into 6 rows of 15 tokens:
+![Tokenized Batch](images/tokenized-batch-internal.png)
+- Since this is too big to be put on the GPU, we break the 15 items apart into smaller pieces to put on the GPU.
+- Pass the now clean tokens into a Data Loader: `dl = LMDataLoader(nums200)`
+- The default sequence size is 72 internally.
+- Example DataBlock:
+```python
+dls_lm = DataBlock(
+    blocks=TextBlock.from_folder(path, is_lm=True),
+    get_items=get_imdb, splitter=RandomSplitter(0.1)
+).dataloaders(path, path=path, bs=128, seq_len=80)
+```
+- And, now we create the learner:
+```python
+learn = language_model_learner(
+    dls_lm,        # our data
+    AWD_LSTM,      # the pre-trained model
+    drop_mult=0.3, # I know about dropout; talking about it soon.
+    metrics=[accuracy, Perplexity()]).to_fp16()
+```
+- When you save the model, it will put it in `learn.path/models/`
+- Save the model: `learn.save('1epoch')`.
+- Import the model: `learn = learn.load('1epoch')`
+> The model not including the final layer is called the encoder.
+
+- You can save the trained model using the below:
+```python
+learn.save_encoder('finetuned')
+```
+- You can do some text prediction now:
+```python
+TEXT = "I liked this movie because"
+N_WORDS = 40
+N_SENTENCES = 2
+preds = [learn.predict(TEXT, N_WORDS, temperature=0.75)
+         for _ in range(N_SENTENCES)]
+```
+- Now we're going to train a new model but using the vocab from the model we already trained:
+```python
+
+dls_clas = DataBlock(
+    blocks=(
+      TextBlock.from_folder(
+        path,
+        vocab=dls_lm.vocab),  # this is the magic part
+    CategoryBlock),
+    get_y = parent_label,
+    get_items=partial(get_text_files, folders=['train', 'test']),
+    splitter=GrandparentSplitter(valid_name='test')
+).dataloaders(path, path=path, bs=128, seq_len=72)
+```
+- Jeremy claims that removing the stem is a bad idea.
+- This is due to it removing some amount of meaning.
+- Since the reviews are a variable length, we're going to want to add padding to the ends like in Vision.
+- Now we create the learner:
+```python
+learn = text_classifier_learner(dls_clas, AWD_LSTM, drop_mult=0.5,
+                                metrics=accuracy).to_fp16()
+```
+- We'll then want to load in what we trained before:
+```python
+learn = learn.load_encoder('finetuned')
+```
+- It is better to only unfreeze one layer at a time instead of the whole model.
+- We can specify the depth of layers to unfreeze using:
+```python
+learn.freeze_to(-2)
+learn.fit_one_cycle(1, slice(1e-2/(2.6**4),1e-2))
+```
+- Data Augmentation in text is showing up as something else important to improve upon again.
+- Now we're going to go into the code and find out the how.
+- Jeremy made his own simple training dataset to start with.
+> One of the most common practical mistakes I see even amongst highly experienced practitioners is failing to use appropriate datasets at appropriate times during the analysis process. In particular, most people tend to start with datasets that are too big and too complicated
+
+- **Numericalize** is a very easy process which can be done with just a dictionary comprehension:
+```python
+tokens = text.split(' ')
+vocab = L(*tokens).unique()
+word2idx = {w:i for i,w in enumerate(vocab)}
+nums = L(word2idx[i] for i in tokens)
+```
+- Now for the actual PyTorch Language Model:
+```python
+
+class LMModel1(Module):
+    def __init__(self, vocab_sz, n_hidden):
+        self.i_h = nn.Embedding(vocab_sz, n_hidden)  
+        self.h_h = nn.Linear(n_hidden, n_hidden)    # This is being reused internally.
+        self.h_o = nn.Linear(n_hidden,vocab_sz)
+
+    def forward(self, x):
+        h = F.relu(self.h_h(self.i_h(x[:,0])))  
+        h = h + self.i_h(x[:,1])
+        h = F.relu(self.h_h(h))
+        h = h + self.i_h(x[:,2])
+        h = F.relu(self.h_h(h))
+        return self.h_o(h)
+```
+- This, in picture form, is a RNN:
+![RNN Example](images/rnn-overview-chart.png)
+- The code gets simplified into:
+```python
+# can we remove this for loop?
+def forward(self, x):
+    h = 0
+    for i in range(3):
+        h = h + self.i_h(x[:,i])
+        h = F.relu(self.h_h(h))
+    return self.h_o(h)
+```
+- It is not ideal to reset the hidden state and instead we want to keep it.
+- When we do this, it creates a fully connected all the way from beginning to end.
+- This will massively increase the amount of memory and computation necessary after each run.
+- To solve this, you throw away the gradient history using `self.h.detach()`.
+- This is called **Truncated Back Propagation Through Time**.
+- Something we'll learn about in Part two is `Callback` which allow you to call a custom piece of code during the training loop.
+- You can add one using `cbs=ModelReseter` or whatever else you've defined.
+- We're wasting a lot of potential learning by using three to predict on.
+- As always, there is a PyTorch version `nn.RNN()`.
+- Deep models are really hard to due to the problem of **Exploding or Disappearing activations**.
+- To fix this, it is really common to use **Long-Short Term Memory** which we will not be going into in this lecture.
+- By using this internal Neural Nets, the architecture can decide how much to update the gradients.
+- An RNN that uses this is just called an **LSTM** and can be replaced with `nn.LSTM()`.
+- Make sure to increase the number of hidden states.
+- Fastai has a class called `ActivationStats` which does this.
+- Now we're going to discuss **Dropout** which is not just for RNNs.
+- What it does is randomly deletes some activations per batch to help generalize better.
+- This prevents a neuron from overspecializing.
+```python
+class Dropout(Module):
+    def __init__(self, p): self.p = p
+    def forward(self, x):
+        if not self.training: return x
+        mask = x.new(*x.shape).bernoulli_(1-p)
+        return x * mask.div_(1-p)
+```
+- There are two regularization methods to talk about next: **Activation Regularization** and **Temporal Activation Regularization**.
+
 
 # Research:
 - Mark I Perceptron?
@@ -629,8 +967,11 @@ class DotProductBias(Module):
 - mybinder.org ?
 - ONNX Runtime?
 - Lenet 5?
-
-
+- @delegates?
+- https://explained.ai/decision-tree-viz/ ?
+- Perplexity() ?
+- BERT?
+- Jürgen Schmidhuber and Sepp Hochreiter?
 
 # Come back:
 - [torch.stack](https://youtu.be/5L3Ao5KuCC4?t=4917)
@@ -639,7 +980,7 @@ class DotProductBias(Module):
 - [Updates notes with Negative Log likelihood](https://youtu.be/p50s63nPq9I?t=6574)
 - [Multi-Label Datasets](https://youtu.be/cX30jxMNBUw?t=1905)
 - [Manually Build CSV from Training](https://youtu.be/cX30jxMNBUw?t=2717)
-
+- [Redo Regularization](https://youtu.be/WjnwWeGjZcM?t=6595)
 
 
 # Reference
@@ -649,12 +990,24 @@ class DotProductBias(Module):
 - [Paper: **Multilayer Feedforward Networks are Universal Approximators**](papers/Multilayer-Feedforward-Networks-are-Universal-Approximators.pdf)
 - [Paper: **Visualizing and Understanding Convolutional Networks.pdf**](papers/Visualizing-and-Understanding-Convolutional-Networks.pdf)
 - [Model Zoo](https://modelzoo.co/)
-- [Splunk: Catching a Fraudster Use case](images/https://www.splunk.com/en_us/blog/security/deep-learning-with-splunk-and-tensorflow-for-security-catching-the-fraudster-in-neural-networks-with-behavioral-biometrics.html)
+- [Splunk: Catching a Fraudster Use case](https://www.splunk.com/en_us/blog/security/deep-learning-with-splunk-and-tensorflow-for-security-catching-the-fraudster-in-neural-networks-with-behavioral-biometrics.html)
 - [Audio Classification With CNNs](images/https://medium.com/@etown/great-results-on-audio-classification-with-fastai-library-ccaf906c5f52)
 - [Paper: **Malware Classification With Deep Convolutional Neural Network**](papers/Malware-Classification-with-Deep-Convolutional-Neural-Network.pdf)
 - [Original Drive Train Article](https://www.oreilly.com/radar/drivetrain-approach-data-products/)
 - [Paper: **Actionable Auditing Investigating Impact of Publicly Naming Biased Performance Results of Commercial AI Prodcuts**](papers/Actionable-Auditing-Investigating-Impact-of-Publicly-Naming-Biased-Performance-Results-of-Commercial-AI-Prodcuts.pdf)
 - [Fastpages for Blogging](https://github.com/fastai/fastpages)
-- [Paper: Whats Measured is What Matters Targets and Gaming in the English Public Healthcare System](papers/Whats-Measured-is-What-Matters-Targets-and-Gaming-in-the-English-Public-Healthcare-System.pdf)
+- [Paper: **Whats Measured is What Matters Targets and Gaming in the English Public Healthcare System**](papers/Whats-Measured-is-What-Matters-Targets-and-Gaming-in-the-English-Public-Healthcare-System.pdf)
 - [Markkula Center For Applied Ethics](https://www.scu.edu/ethics/)
--
+- [Paper: **Reliance on Metrics is a Fundamental Challenge for AI**](papers/Reliance-on-Metrics-is-a-Fundamental-Challenge-for-AI.pdf)
+- [Paper: **A Framework for Understanding Unintended Consequences of Machine-Learning**](papers/A-Framework-for-Understanding-Unintended-Consequences-of-Machine-Learning.pdf)
+- [Paper: **What Do We Teach When We Teach Tech Ethics? A Syllabi Analysis**](papers/What-Do-We-Teach-When-We-Teach-Tech-Ethics-A-Syllabi-Analysis.pdf)
+- [Paper: **Building One-Shot Semi-supervised (BOSS) Learning up to Fully Supervised Performance**](papers/Building-One-Shot-Semi-supervised-Learning-up-to-Fully-Supervised-Performance.pdf)
+- [Paper: **A Useful Taxonomy for Adversarial Robustness of Neural Networks**](papers/A-Useful-Taxonomy-for-Adversarial-Robustness-of-Neural-Networks.pdf)
+- [Paper: **Towards High Performance Network Training with Noisy Label Datasets**](papers/Towards-High-Performance-Network-Training-with-Noisy-Label-Datasetspdf)
+- [Paper: **Entity Embeddings of Categorical Variables**](papers/Entity-Embeddings-of-Categorical-Variables.pdf)
+- [Paper: **Wide & Deep Learning for Recommender Systems**](papers/Wide-and-Deep-Learning-for-Recommender-Systems.pdf)
+- [Paper: **Leakage in Data Mining: Formulation, Detection, and Avoidance**](papers/Leakage-in-Data-Mining-Formulation-Detection-and-Avoidance.pdf)
+- [Paper: **Universal Language Model Fine-tuning for Text Classification**](papers/Universal-Language-Model-Fine-tuning-for-Text-Classification.pdf)
+- [Paper: **UNSUPERVISED DATA AUGMENTATION FOR CONSISTENCY TRAINING**](papers/UNSUPERVISED-DATA-AUGMENTATION-FOR-CONSISTENCY-TRAINING.pdf)
+- [Paper: **Regularizing and Optimizing LSTM Language Models**](papers/Regularizing-and-Optimizing-LSTM-Language-Models.pdf)
+- [Paper: **Improving neural networks by preventing co-adaptation of feature detectors**](papers/Improving-neural-networks-by-preventing-co-adaptation-of-feature-detectors.pdf)
