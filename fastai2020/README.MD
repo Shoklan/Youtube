@@ -9,8 +9,8 @@
 4. [Lesson 4: Popping Open the Top For Fundamentals](#lession4)
 5. [Lesson 5: Muh Ethics](#lession5)
 6. [Lesson 6: Collaborative Filters and Embeddings](#lession6)
-7. [Lesson 7:](#lession7)
-8. [Lesson 8:](#lession8)
+7. [Lesson 7:Two Approaches to Tabular](#lession7)
+8. [Lesson 8: Skimming Recurrent Neural Nets](#lession8)
 
 
 # <a name="lession1">Lesson 1</a>
