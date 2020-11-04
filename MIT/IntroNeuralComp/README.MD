@@ -58,6 +58,46 @@
 
 
 # RC Circuit and Nernst Potential
+- Today we're going to start working on the **Resistor-Capacitor** model.
+- Many, if not most, ion channels are sensitive to voltage.
+- Nearly every aspect of computation and signaling in a neuron is controlled by voltage.
+- Neurons can do numerical integration over time:
+![Neural Integration](images/neurons-analog-integration.png)
+- A **Capacitor** is two wires separated by an insulator.
+![Capacitor Symbol](images/capacitor-symbol.png)
+- As positive charges build on the inside of the membrane, they repel positive charges on the outside of the membrane.
+![Ions Being Repelled via Membrane](images/ions-being-repelled-by-membrane.png)
+- An electric field over some distance corresponds to a voltage difference.
+- The **Capacitance of Current** is just the rate at which charge imbalance is changing.
+![Change in Voltage of a Neuron](images/change-in-voltage-equation.png)
+- We can integrate to get the the total change in voltage:
+![Differential Injected Voltage](images/differential-equation-for-injected-voltage.png)
+- Cell membranes allow the current to flow around it.
+- What happens when you poke a hole in the cell membrane and it starts to leak?
+- The effect can simply be modeled as a resistor.
+- The leaked current and the passing current has to be equal to the passing current.
+![Simple Leakage Equation](images/our-simple-leakage-model.png)
+![Finalized Equation](images/finalized-simple-leak-equation.png)
+- After we Steady-State the Differential Equation, we just get Ohm's Law back out with different symbols.
+![Finalized Finalized Leakage Equation](images/finalized-finalized-Simple-Leakage-Equation.png)
+- The derivative always approaches zero in this case at an exponential rate:
+![Derivative of Voltage](images/how-does-change-in-voltage-behave.png)
+![Response to Current Injection](images/response-to-current-injection.png)
+- It is easier to think about resistance in terms of **Conductance**.
+![Definition of Conductance](images/definition-of-conductance.png)
+- The total *Capacitance* is just the sum of the *Capacitance*.
+- The capacitance of a cell depends linearly on its surface area.
+- You can write the membrane time constant as capacitance per unit Area over conductance per unit area:
+![Membrane Time Constant](images/membrane-time-constant.png)
+- Without a battery, the "circuit" just returns to 0 once we turn the voltage off.
+- The cell "connects this battery" at different times to different "wires" for different action potentials.
+- Where do the batteries of a neuron come from?:
+  1. Ion concentration gradients.
+  2. Ion-selective permeability of ion channels.
+![ Nernst Potential ](images/nerst-potential-equation.png)
+- This is complicated so we're going to use the **Boltzman Equation** instead:
+![Calculate the Nernst Potential](images/boltzman-equation-for-nernst-potential.png)
+
 
 # Nernst Potential and Integrate and Fire Models
 
@@ -96,5 +136,7 @@
 # Hopfield Networks
 
 # Research:
+- Alex Hodgin?
+- Andrew Huxley?
 
 # Reference:
