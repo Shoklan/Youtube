@@ -100,6 +100,28 @@
 
 
 # Nernst Potential and Integrate and Fire Models
+- This potential is different depending on the kind of ion in the saline solution.
+- Calcium is kept to a very low level intentionally since once is shows up it will do something important.
+- For Potassium conductance, if you hold the voltage above the equilibrium then potassium ions move out of the cell.
+- Our basic model for describing the Current-Voltage relationship:
+![Current-Voltage Relationship](images/current-voltage-relation-model.png)
+- The **Driving Potential** is the V-Ek in the final formula.
+![Model of Voltage at Steady-State](images/latest-circuit-equation-including-battery.png)
+- **Action Potentials** are really important but most of the time the neuron is not spiking.
+- Most of the time, it is simply accepting input so we're now going to look at another model called **Integrate and Fire**.
+- No extra information is carried in the spike waveform.
+- When a neuron reaches **Spike Threshold**, then  it fires:
+![Neuron Integrate and Fire Model](images/basic-integrate-and-fire-model.png)
+- When we insert voltage, it will constantly cause a neuron to spike.
+- Now we'll calculate the **Firing Rate** of our neuron model:
+![Firing Rate Model](images/firing-rate-model-equation.png)
+- This was all assuming there was no leaking.
+- Now we'll add it back - with leakage:
+![Firing Rate with Leakage](images/fire-rate-graph-with-leakage.png)
+- Now, we'll update our old formula with the new one:
+![Updated Voltage Equation](images/updated-voltage-fire-rate-with-leakage.png)
+![ Outline of Hodgkin-Huxley Model](images/outline-hodgkin-huxley-model.png)
+
 
 # Hodgkin-Huxley Model Part 1
 
@@ -138,5 +160,6 @@
 # Research:
 - Alex Hodgin?
 - Andrew Huxley?
+- Louis Lapique, 1907?
 
 # Reference:
