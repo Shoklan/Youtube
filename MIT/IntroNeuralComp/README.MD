@@ -124,6 +124,26 @@
 
 
 # Hodgkin-Huxley Model Part 1
+- We're now going to write down an algorithm for how a neuron spikes.
+![ Neuron Algorithm Steps](images/neuron-spike-algorithm-steps.png)
+- Hodgkin and Huxley studied the ion channels in Giant squids.
+- It is better to hold a voltage constant at different values than to just crank it up.
+- This is because it will just cause the cell to spike.
+- The best idea is to create a **Voltage Clamp** - a device which holds the membrane potential of a cell to and desired command voltage.
+![Voltge Clamp Gain](images/voltage-clamp-gain.png)
+- The algorithm is:
+  1. If Vm < Vc => drives current into the neuron.
+  2. if Vm > Vc => drives current out of the neuron.
+![Single Channels](images/recording-single-channel-ions.png)
+- These are actually multiple channels and we need to average them.
+- You can calculate the average using:
+![Converge to Single Channel](images/average-ion-channel-into-single-channel.png)
+![Gating Variable for Potassium ](images/gating-variable-for-potassium.png)
+![Derive Voltage Dependence Using Boltzman](images/derive-voltage-dependence-boltzmann-equation.png)
+- Thermal fluctuations kick the channel into an open state so we have to wait for that to happen.
+- The change in the number of open subunits = number of opening subunits - number of closing subunits.
+![Probability of Subunits Being Open](images/opne-close-subunits-in-neuron.png)
+
 
 # Hodgkin-Huxley Model Part 2
 
