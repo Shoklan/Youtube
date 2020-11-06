@@ -144,7 +144,7 @@
 - The change in the number of open subunits = number of opening subunits - number of closing subunits.
 ![Probability of Subunits Being Open](images/opne-close-subunits-in-neuron.png)
 
-
+ 
 # Hodgkin-Huxley Model Part 2
 
 # Dendrites
