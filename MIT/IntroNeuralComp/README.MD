@@ -144,8 +144,24 @@
 - The change in the number of open subunits = number of opening subunits - number of closing subunits.
 ![Probability of Subunits Being Open](images/opne-close-subunits-in-neuron.png)
 
- 
+
 # Hodgkin-Huxley Model Part 2
+- We're going to continue our elaboration on the Hodgkin-Huxley model.
+- Using this, we can also study how disease in the Sodium channel.
+- We can use the the same model for Conductance of Sodium as we did for Potasium:
+![K and Na Conductance](images/k-conductance-Na-conductance.png)
+![Gating Variables, Graphed](images/gating-variables-sodium-gating-equation.png)
+- The **Inactivation Particle** is inside the membrane and is slightly positively charged.
+- Now we're going to try and study the Gating nature of the *Inactive Particle*.
+![ Sodium Inactivity Gating Channel](images/sodium-inactivity-gating-function.png)
+- There is an assumption that the gating inactivity particle and the sodium channels are independent.
+  * It's not true but close.
+- Putting it all together:
+![Total Cell Membrane Current](images/total-cell-membrane-current-equation.png)
+- There is a refractory period where the *Inactivity Particle* will inhibit firing until it returns to baseline.
+- This is apparent in the mutation in humans:
+![Sodium Channel Mutations](images/mutation-sodium-channels-visual-example.png)
+
 
 # Dendrites
 
