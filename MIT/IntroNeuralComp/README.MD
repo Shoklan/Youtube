@@ -184,7 +184,27 @@
 
 
 # Synapses
-- 
+- There are electrical synapses but we'll be ignoring those.
+- We're going to be focusing on **Chemical Synapses** now:
+![Structure of Chemical Synapse](images/structure-of-checmical-synapse.png)
+- There density and count of synapses is quite high:
+![Synapse Count and Density](images/unbelievable-synapses-counts.png)
+- **Ionitropic Receptors** are receptors that also create ion channels.
+- The I-V Curve for these receptors is linear and 0 at 0 Current.
+- Remember that this is what the I-V curve of a resistor looks like:
+![I-V Curve of Ionic Receptors](images/i-v-curve-looks-resistor.png)
+![Equivalent Circuit Model of a Synapse](images/equivalent-circuit-model-of-synapse.png)
+- The response to multiple spikes in a synapse can be modeled as a convolution:
+![Synapse Response as Convolution](images/synapse-model-as-convolution.png)
+- Now we're going to study **Synaptic Saturation**.
+![Synaptic Saturation Cap](images/synaptic-saturation-model.png)
+- The **LG Neuron** is a *command neuron*.
+- Escape behaviors are strongly modulated by inhibition.
+- If one escape behavior is active then another is resistant to firing.
+- The escape response is also suppressed while the animal is eating but not while searching for food.
+- There are two types of inhibition:
+  1. **Absolute Inhibition**: Do not activate no matter how much excitation takes place.
+  2. **Relative Inhibition**: Likelihood is reduced but still possible to override.
 
 
 # Spike Trains
