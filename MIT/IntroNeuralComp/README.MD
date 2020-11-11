@@ -164,8 +164,28 @@
 
 
 # Dendrites
+- We focused on the soma of a neuron because that is where the decision to fire an action potential is made.
+- In reality, most of the inputs are to the dendrites and not the soma.
+- The first thing we will need to do is simplify this complex network.
+- A dendrite is like a leaky garden hose.
+![Base Model a Dendrite](images/base-model-of-dendrite-circuit.png)
+- We are going to approximate our dendrite using **Finite Element Analysis**.
+![Finite Element Analysis Model](images/dendrite-finite-element-analysis-subcomponents.png)
+![The Cable Equation](images/the-cable-equation.png)
+- Lambda has units of length.
+![Derive the Cable Equation](images/derive-the-cable-equation.png)
+- The **Dirac Delta Function** is a function which is very narrow and tall such that when you integrate over it you get a 1.
+![Closer Look at the Space Constant](images/closer-look-space-constant.png)
+- Space Constant scales with the radius of the Dendrite.
+- The **Electrotonic Length** is the physical length divided by the space constant.
+![ Electrotonic Lenth](images/electrotonic-length.png)
+- The full dendrite network is not modeled but instead a model called **Multi-compartment Model**.
+![ Two Compartment Model](images/two-compartment-model.png)
+
 
 # Synapses
+- 
+
 
 # Spike Trains
 
@@ -197,5 +217,6 @@
 - Alex Hodgin?
 - Andrew Huxley?
 - Louis Lapique, 1907?
+-= Dirac Delta Function ?
 
 # Reference:
