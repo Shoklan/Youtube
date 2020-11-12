@@ -230,6 +230,22 @@
 
 
 # Receptive Fields
+- **Receptive Fields** are areas where neuron's fire when detecting input - such as a white light.
+- It actually responds to certain features and not just a region.
+- We can think of a neuron as having a filter that passes certain features in both space and time.
+![Spacial Receptive Fields](images/spatial-receptive-field-model.png)
+- We're going to consider the simplest case of a detection filter:
+![Spatial Field in One Direction](images/spatial-in-one-direction.png)
+![Filter and Input](images/interaction-between-filter-and-input.png)
+- Neurons are also sensitive to inputs in time.
+- Mathematically, this is what we're doing:
+![Temporal Receptive Fields](images/temporal-receptive-field-equation.png)
+- Now we will put them together to create a the **Spatio-Temporal Receptive Field(STRF)** finally.
+- This - conceptually - is a *convolution* and a *correlation*:
+![ Spatio-Temporal Receptive Field](images/convelution-correlation-field-generation.png)
+- **Separability** means that you can write the temporal and spatial receptive fields separately:
+![Separability](images/separability-graph-example.png)
+
 
 # Time Series
 
