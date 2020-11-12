@@ -208,6 +208,26 @@
 
 
 # Spike Trains
+- What happens to the voltage outside our model neuron during an action potential?
+![Etracellular Signals](images/extracellular-signals-around-neuron.png)
+- In relations to one another, the Intracellular current dominates the equation:
+![Relation Between Membrane and Extracellular Potentials](images/relation-between-membrane-potential-extracellular-potential.png)
+- What we find is the the change in voltage in extracellular space is proportional to the derivative of the membrane potential.
+- So, it turns out that the kinds of Extracellular activites depends quite a bit on the morphology of the arranged cells.
+![Sampling for Analog to Digital Converting](images/electrical-recording-of-brain-activity.png)
+- There is two kinds of signals:
+  1. Slow - via Local Field Potentials.
+  2. Fast - via action potentials.
+- We can actually extract the fast and slow components using a technique called **High/Low-Pass Filtering**.
+- We can represent a spike train as a list of spike times:
+![Spike Train](images/spike-train-as-array.png)
+- We'll right down the *Spike Train* as a sum of delta functions.
+![Spike Train as Functions](iamges/spike-train-as-sum.png)
+- First we're going to try and simply average the firing rates per trial.
+- If you use bins to improve the amount of data collected, then where those bins are placed can have an impact on your sums.
+- We'll be using a Gaussian Kernel since it is even better:
+![Gaussian Kernel](images/firing-rates-gaussian-kernel.png)
+
 
 # Receptive Fields
 
