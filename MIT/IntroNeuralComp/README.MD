@@ -248,6 +248,27 @@
 
 
 # Time Series
+- When we develop tools, we're externalizing what the brain does.
+- There have been some statistical measures of the spike train variability.
+- Spike Trains are often quite variable.
+- If we break the input into small enough time windows - such that most windows have no spikes - then we can write the probability:
+![Probability of Spike Trains](images/probability-spike-trains.png)
+- This then converts the spike a **Poisson Distribution**.
+![Spike Train as Poisson](images/poisson-dsitribution-from-spike-train.png)
+![Derivation of the Poisson Distribution](images/poisson-distribution-derivation.png)
+![Poisson of the Fire Rate, Visually](images/fire-rate-poisson-graph.png)
+![Spike Count Variability](images/spike-count-variability-intro-fano.png)
+![Interspike Interval Distruibution](images/interspike-interval-distribution.png)
+- An **Inhomogeneous Poisson Process** is where there is not a constant rate mew.
+- **Cross-Correlation** is a way to examine the temporal relation between signals.
+- This is a powerful way to find relationships in signals since random values drop out:
+![Cross Correlation Function](images/cross-correlation-function.png)
+- **Auto-Correlation** is simply a cross correlation of a signal with itself.
+- *Autocorrelatoins* are always a maximum at 0 lag.
+- A **Spectrogram** shows how much power there is in a sound at different frequencies and at different times.
+- A **Fourier Series** is a way of decomposing periodic signals by applying filters to it.
+![Fourier Series](images/fourier-series-approximation.png)
+
 
 # Spectral Analysis Part 1
 
