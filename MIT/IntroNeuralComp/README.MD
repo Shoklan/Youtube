@@ -271,6 +271,37 @@
 
 
 # Spectral Analysis Part 1
+- We're going to dedicate these next few lectures to explaining a single Matlab command: `fft()`.
+- This is because it's very easy to use the function incorrectly.
+- Next we're going to figure out how to find the coefficients.
+![DC Co-efficients Explained](images/DC-coefficients-explained.png)
+- If a function has maximal overlap with a single cosine function then it has zero overlap with the others.
+- We're taking projections and trying to see if we can notice anything interesting.
+![Orthogonal Cosine Basis](images/cosine-orthogonal-basis-set.png)
+- Now we'll look at an antisymmetric function:
+![Anti-Symmetric Function](images/fourier-series-antisymmetric-function.png)
+- So, you can right any arbitrary function as the sum of both parts:
+![Fourier Series Comes Together](images/fourier-series-sym-and-antisym.png)
+- While you can do this, we can write them in a simpler way using complex exponentials.
+- You can write down any periodic function of time as sums of complex exponentials:
+![Euler's Re-write](images/complex-fourier-rewrite.png)
+![Euler Swap In](images/fourier-swap-in-euler.png)
+![Complex Fourier Derivation](images/derived-complex-fourier-series.png)
+- Pull the actual coefficient using:
+![Generate Complex Fourier Coefficients](images/generate-complex-fourier-coefficients.png)
+- Remember that this only works for periodic functions.
+- If you want non-periodic functions then we'll be using:
+![Non-Periodic Fourier Transform](images/non-periodic-fast-fourier.png)
+- Now we'll be checking out the **Fast Fourier Transform**.
+- To get there, we need to first discuss the **Discrete Fourier Transform** which uses a consistent sampling:
+![Discrete Fourier Transform Interval](images/discrete-fourier-transform-interval.png)
+- The FFT algorithm swaps the positive and negative subsections since it wants the positive in front of the negative values.
+![Fast Fourier Transform Graphic](images/fast-fourier-transform-function-call-graphic.png)
+- No we're going to discuss **Power Spectrum** and we're going to think of this in the electrical sense.
+![Average Power of FFT](images/average-power-of-fft.png)
+- 
+-
+
 
 # Spectral Analysis Part 2
 
