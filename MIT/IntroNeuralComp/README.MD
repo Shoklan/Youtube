@@ -343,11 +343,34 @@
 ![ Orthogonal Taper Functions ](images/orthogonal-functions-with-erorr-bars.png)
 ![Select Taper Procedure](images/taper-selection-procedure.png)
 - With a Larger p, you get more suppression of the side lobes and an increased bandwith.
-- 
-
 
 
 # Rate Models and Perceptrons
+- We are going to examine some of the computational properties of networks of neurons.
+- Our first step is to derive a simplified mathematical model of neurons that we can study analytically.
+- We are going to ignore the spikes and simply model the intputs and outputs as firing rates.
+![Rate Model Basics](images/rate-model-basic-idea..png)
+![ Input Synapse Rate Model](images/synaptic-input-equation-rate-model.png)
+- What happens when our model has multiple inputs?
+![ Linear Response Equation](images/linear-response-of-our-neuron.png)
+- Some Linear Algebra crash course:
+![ Linear Algebra, Part One](images/linear-algebra-part-one.png)
+![ Linear Algebra, Part Two](images/linear-algebra-part-two.png)
+![ Linear Algebra, Part Three](images/linear-algebra-part-three.png)
+![ Linear Algebra, Part Four](images/linear.png)
+![ Linear Algebra, Part Five](images/linear-algebra-part-five.png)
+![ Linear Algebra, Part Six](images/linear-algebra-part-six.png)
+![ Linear Algebra, Part Seven](images/linear-algebra-part-seven.png)
+![ Linear Algebra, Part Eight](images/linear-algebra-part-eight.png)
+![ Linear Algebra, Part Nine](images/linear-algebra-part-nine.png)
+- **Classification** is a general computational problem solved by the brain.
+- **Feed-Forward Circuits** can be very good at classification.
+- They are, however, not very good at this when inputs are connected directory to outputs.
+- For a **Perceptron**, we make a simplified model of a neuron that is very good at making decisions.
+![Binary Threshold Unit](images/perceptron-binary-threshold.png)
+- You classify things by trying, making mistakes and then correct those observations which were wrong.
+![Decision Boundary in Two Dimensions](images/decision-boundary-in-two-directions.png)
+
 
 # Matrix Operations
 
