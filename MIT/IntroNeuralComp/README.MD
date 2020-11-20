@@ -299,13 +299,53 @@
 ![Fast Fourier Transform Graphic](images/fast-fourier-transform-function-call-graphic.png)
 - No we're going to discuss **Power Spectrum** and we're going to think of this in the electrical sense.
 ![Average Power of FFT](images/average-power-of-fft.png)
-- 
--
 
 
 # Spectral Analysis Part 2
+- Now we're going to talk about converting into Decibels.
+- An increase in 100 means power of two - multiplied by 10 is two decibels.
+- The faster something moves in time, the more stretched out the frequency will be.
+- One of the most important functions to know the FT for is the *Square Pulse*.
+- Since the FT changes as a ratio of the pulse, you can predict how changes in the pulse length changes the FT:
+![Fast Fourier Transform Predict](images/fast-fourier-predict-transform.png)
+- The Fourier Transform of a Gaussian is just another Gaussian.
+![ Time-Bandwidth Product and Gaussian FT](images/fourier-gaussian-is-gaussian.png)
+![ Relate Convolution and FT](images/relation-between-fourier-transform-and-convolution.png)
+![Fourier Transform of a Convolution](images/fourier-transform-of-a-convolution.png)
+![Gaussian-Windowed Cosine Wave](images/gaussian-windowed-cosine.png)
+- **Gaussian Noise** is a sample drawn independently from a Gaussian Distribution.
+![Gaussian Noise Correlations](images/gaussian-noise-correlations-graphics.png)
+- The Fourier Transform of Gaussian Noise is simply Gaussian Noise.
+- The *Power Spectrum* of *Gaussian Noise* is very noisy.
+- You can estimate the *Power Spectrum* of the samples with an average:
+![Estimate Power Samples](images/spectral-estimate-average-samples.png)
+- The process of **Windowing** actually does really awful stuff to the estimate.
+- Instead of multiplying by square pulses, we multiply by "tapering":
+![Spectral Estimates with Sampling](images/spectral-tapering-sample-multiplication.png)
+- Filtering in the frequency domain is simply multiplying by a FT:
+![Convolution as a Filter](images/convolution-as-a-filter.png)
+- The **Wiener-Kinchine Theorem** states that power spectrum and the autocorrelation functions are related by Fourier Transform.
+![Winer-Kinchine Theorem](images/wiener-kinchine-theorem.png)
+- The **Nyquist-Shannon Theorem** states that if you want to sample the signal in time then you need the sampling rate to be twice the bandwidth of the signal.
+- And, so long as you have done this then you can perfectly recreate the signal.
+![Alias from Nyquist-Shanon Exmaple](images/nyquist-shannon-theorem-alias-example.png)
+- You can pad the vector with zeros and then do an inverse FFT.
+
 
 # Spectral Analysis Part 3
+- Looking like a lot of review.
+![Harmonic Stack](images/harmonic-stack-visual.png)
+![Spectrogram Creation](images/create-a-spectrogram-from-samples.png)
+- In theory, a perfect taper would give you a really fine temporal and frequency resolution.
+![An Example Taper](images/example-taper-resolution.png)
+![Finding the Correct Taper](images/finding-the-correct-taper.png)
+- Finding the Correct taper uses a set of orthogonal functions to seek it:
+![ Orthogonal Taper Functions ](images/orthogonal-functions-with-erorr-bars.png)
+![Select Taper Procedure](images/taper-selection-procedure.png)
+- With a Larger p, you get more suppression of the side lobes and an increased bandwith.
+- 
+
+
 
 # Rate Models and Perceptrons
 
@@ -325,6 +365,11 @@
 - Alex Hodgin?
 - Andrew Huxley?
 - Louis Lapique, 1907?
--= Dirac Delta Function ?
+- Dirac Delta Function ?
+- Convolution Theorem?
+- Nyquist Limit?
+- Dirichlet Kernel?
+- Slepian Functions?
+
 
 # Reference:
