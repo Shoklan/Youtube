@@ -373,6 +373,25 @@
 
 
 # Matrix Operations
+- Now let's understand how a Neural Network Learns again.
+![Perceptron Learning](images/perceptron-learning-starting.png)
+![Perceptron Learning Rate](images/perceptron-learning-rule-intuition.png)
+![Neuronal Logic](images/neuronal-logic-and-or-gates.png)
+- Some logical operators - such as XOR - cannot be resolved with a single perceptron.
+- However, you can do this with multi-layer perceptrons.
+![Perceptron Multilayer](images/multi-layer-perceptron-xor.png)
+![Example Deep Neural Networks](images/example-deep-neural-networks.png)
+- Write the weights as a matrix:
+![Feed Forward Matrix Representation](images/weights-of-feed-forward-matrix.png)
+- In Matrix Multiplication, we generally multiply all the rows by all the columns.
+- You can think of matrices as a system of equations:
+![System of Equations as Matrix](images/system-of-equations-as-matrix.png)
+- You can then solve this by multiplying the Inverse Matrix by the x vector/matrix to solve:
+![Solve System Of Equations](images/solve-linear-system-of-equations.png)
+- To get an inverse, you need to find the **Determinant** of A:
+![Matrix Determinant](images/matrix-inverse-calculatoin.png)
+![Manipulate Matrix Transformations](images/matrix-manipulations-via-identity-manipulations.png)
+
 
 # Basis Sets
 
