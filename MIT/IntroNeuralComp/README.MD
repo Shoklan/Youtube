@@ -394,6 +394,20 @@
 
 
 # Basis Sets
+- As living beings, we're looking out into the world of high dimensional data.
+![Linear Combinations](images/linear-combinations-matrix-multiplication.png)
+![Apply Transformations In Order](images/apply-matrix-transformations-in-order.png)
+- Doing the inverse is just the inverse order:
+![Matrix Inverse](images/inverse-of-a-matrix.png)
+- Sometimes you cannot go backwards with some transformations:
+![Compress to a Line](images/no-inverse-transformations.png)
+- As soon as you see no *Determinant* then there information loss.
+![Basis Sets](images/basis-of-sets.png)
+![Orthonormal](images/orthonormal-basis-and-kronecker-delta.png)
+![Coordinate Vector](images/coordinate-vector-definition.png)
+- The *Determinant* of a matrix is the volume of that matrix:
+
+
 
 # Principal Components Analysis​
 
