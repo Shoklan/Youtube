@@ -408,12 +408,24 @@
 - The *Determinant* of a matrix is the volume of that matrix:
 
 
-
 # Principal Components Analysis​
+- Diagonal matrices have the property that they map any vercotr parallel to a standard basis vector into another vector along that standard basis.
+![Definition of Eigenvector](images/definition-of-eigen-vector.png)
+![Eigen Values and Eigen Vectors](images/eigenvalues-and-eigenvectors.png)
+![Solve for Eigenvalues](images/solve-for-eigenvalues.png)
+- Eigen values of a symmetric matrix are always real.
+![Eigen Decomposition](imaages/eigen-decomposition.png)
+- Now we're going to review variance.
+![Gaussian Distribution](images/gaussian-distribution-fit.png)
+![Multivariate Gaussian Distributions](images/multivaritate-guassian-distributions.png)
+![Covariance Derived](images/covariance-matrix-derived.png)
+![Outer Product Example](images/outer-product-example.png)
+- Principle Component Analysis is amazing.
+
 
 # Recurrent Networks
 
-#  Neural Integrators
+# Neural Integrators
 
 # Hopfield Networks
 
@@ -426,6 +438,7 @@
 - Nyquist Limit?
 - Dirichlet Kernel?
 - Slepian Functions?
+- Mahalanobis Distance?
 
 
 # Reference:
