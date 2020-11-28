@@ -431,6 +431,10 @@
 
 
 # Neural Integrators
+- Now we're going to look at Neural Networks and the concept of memory.
+![Short vs Long Term Memory](images/short-vs-long-term-memory-beliefs.png)
+- Meh.
+
 
 # Hopfield Networks
 
