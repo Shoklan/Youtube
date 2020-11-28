@@ -428,7 +428,6 @@
 - Each neuron has an equation like this:
 ![Time Dependence in Neuron](images/neural-networking-time-dependence-equation-for-neuron.png)
 - An **Autapse** is a synapse that connects to itself.
-- 
 
 
 # Neural Integrators
