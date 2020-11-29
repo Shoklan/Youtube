@@ -402,7 +402,7 @@
 - Sometimes you cannot go backwards with some transformations:
 ![Compress to a Line](images/no-inverse-transformations.png)
 - As soon as you see no *Determinant* then there information loss.
-![Basis Sets](images/basis-of-sets.png)
+<!-- ![Basis Sets](images/basis-of-sets.png) -->
 ![Orthonormal](images/orthonormal-basis-and-kronecker-delta.png)
 ![Coordinate Vector](images/coordinate-vector-definition.png)
 - The *Determinant* of a matrix is the volume of that matrix:
@@ -437,6 +437,8 @@
 
 
 # Hopfield Networks
+- Self Research Later.
+
 
 # Research:
 - Alex Hodgin?
